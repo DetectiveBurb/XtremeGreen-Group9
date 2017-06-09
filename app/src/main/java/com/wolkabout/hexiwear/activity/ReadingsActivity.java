@@ -37,6 +37,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.wolkabout.hexiwear.R;
 import com.wolkabout.hexiwear.model.Characteristic;
 import com.wolkabout.hexiwear.model.HexiwearDevice;
@@ -62,6 +64,10 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 @EActivity(R.layout.activity_readings)
@@ -238,6 +244,8 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         // Something terrible happened.
     }
 
+
+
     @Override
     protected void onDestroy() {
         if (isBound) {
@@ -264,6 +272,8 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
         final String uuid = intent.getStringExtra(BluetoothService.READING_TYPE);
         final String data = intent.getStringExtra(BluetoothService.STRING_DATA);
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        final String key="";
 
         if (data.isEmpty()) {
             return;
@@ -276,25 +286,34 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         }
 
         switch (characteristic) {
-            case BATTERY:
+           /* case BATTERY:
                 readingBattery.setValue(data);
-                break;
+                break; */
             case TEMPERATURE:
+                TempuratureData temp = new TempuratureData();
+                temp.setData(Double.parseDouble(data));
                 readingTemperature.setValue(data);
+                mDatabase.setValue(temp);
                 break;
             case HUMIDITY:
+                HumidityData temp1 = new HumidityData();
+                temp1.setData(Double.parseDouble(data));
                 readingHumidity.setValue(data);
+                mDatabase.setValue(temp1);
                 break;
-            case PRESSURE:
+           /* case PRESSURE:
                 readingPressure.setValue(data);
                 break;
             case HEARTRATE:
                 readingHeartRate.setValue(data);
-                break;
+                break; */
             case LIGHT:
+                TempuratureData temp2 = new TempuratureData();
+                temp2.setData(Double.parseDouble(data));
                 readingLight.setValue(data);
+                mDatabase.setValue(temp2);
                 break;
-            case STEPS:
+          /*  case STEPS:
                 readingSteps.setValue(data);
                 break;
             case CALORIES:
@@ -318,6 +337,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 readingGyro.setSecondValue(gyroscopeReadings[1]);
                 readingGyro.setThirdValue(gyroscopeReadings[2]);
                 break;
+                */
             default:
                 break;
         }
@@ -390,3 +410,69 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     }
 
 }
+
+final class HumidityData {
+    Date date = new Date();
+    double data;
+
+    public double getData() {
+        return data;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setTime(Date d) {
+        date=d;
+    }
+
+    public void setData(double data) {
+        this.data = data;
+    }
+}
+
+
+final class LightData {
+    Date date = new Date();
+    double data;
+
+    public double getData() {
+        return data;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setTime(Date d) {
+        date=d;
+    }
+
+    public void setData(double data) {
+        this.data = data;
+    }
+}
+
+
+final class TempuratureData {
+    Date date = new Date();
+    double data;
+
+    public double getData() {
+        return data;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setTime(Date d) {
+        date=d;
+    }
+
+    public void setData(double data) {
+        this.data = data;
+    }
+}
+
