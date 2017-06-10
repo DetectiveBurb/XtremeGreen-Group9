@@ -1,0 +1,3 @@
+[submodule "XtremeClient"]
+	path = XtremeGreenClientApp
+	url = https://github.com/2ndPerk/XtremeGreenClientApp
