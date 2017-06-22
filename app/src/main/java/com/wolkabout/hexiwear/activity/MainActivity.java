@@ -268,8 +268,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-    //ignore this comment
-
     @OptionsItem
     void changePassword() {
         PasswordChangeActivity_.intent(this).start();
