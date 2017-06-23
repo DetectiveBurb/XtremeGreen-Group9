@@ -244,18 +244,19 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case CALORIES:
                 break;
             case ACCELERATION:
-                final String[] accelerationReadings = data.split(";");
+               // final String[] accelerationReadings = data.split(";");
                 break;
             case MAGNET:
-                final String[] magnetReadings = data.split(";");
+               // final String[] magnetReadings = data.split(";");
                 break;
             case GYRO:
-                final String[] gyroscopeReadings = data.split(";");
+               // final String[] gyroscopeReadings = data.split(";");
                 break;
             default:
                 break;
         }
     }
+
 
     @Receiver(actions = BluetoothService.STOP)
     void onStopReading() {
@@ -325,70 +326,9 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
 }
 
-/*
-final class HumidityData {
-    Date date = new Date();
-    double data;
-
-    public double getData() {
+    public String getDataReading() {
+        final String data = intent.getStringExtra(BluetoothService.STRING_DATA);
         return data;
+
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setTime(Date d) {
-        date=d;
-    }
-
-    public void setData(double data) {
-        this.data = data;
-    }
-}
-
-
-final class LightData {
-    Date date = new Date();
-    double data;
-
-    public double getData() {
-        return data;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setTime(Date d) {
-        date=d;
-    }
-
-    public void setData(double data) {
-        this.data = data;
-    }
-}
-
-
-final class TempuratureData {
-    Date date = new Date();
-    double data;
-
-    public double getData() {
-        return data;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setTime(Date d) {
-        date=d;
-    }
-
-    public void setData(double data) {
-        this.data = data;
-    }
-}
-
-*/
