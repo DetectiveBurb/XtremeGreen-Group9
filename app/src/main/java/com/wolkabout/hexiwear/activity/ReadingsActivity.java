@@ -72,6 +72,7 @@ import java.util.Map;
 public class ReadingsActivity extends AppCompatActivity implements ServiceConnection {
 
     private static final String TAG = ReadingsActivity.class.getSimpleName();
+    private static final String values;
 
     @Extra
     BluetoothDevice device;
@@ -113,7 +114,10 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         firebaseReference = firebaseDBInstance.getReference("HR");
     }
 
-
+    @Before
+    void initData(){
+        data='';
+    }
 
 
 
@@ -226,10 +230,13 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case TEMPERATURE:
                 someReading.setText(data.toString());
                 firebaseReference.setValue(data.toString());
+                values=data.toString();
+                data
                 break;
             case HUMIDITY:
                 someReading.setText(data.toString());
                 firebaseReference.setValue(data.toString());
+                values=data.toString();
                 break;
             case PRESSURE:
                 break;
@@ -238,6 +245,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case LIGHT:
                 someReading.setText(data.toString());
                 firebaseReference.setValue(data.toString());
+                values=data.toString();
                 break;
             case STEPS:
                 break;
@@ -327,8 +335,8 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 }
 
     public String getDataReading() {
-        final String data = intent.getStringExtra(BluetoothService.STRING_DATA);
-        return data;
+      //  final String data = intent.getStringExtra(BluetoothService.STRING_DATA);
+        return values;
 
     }
 
