@@ -103,8 +103,8 @@ public class LoginActivity extends AppCompatActivity {
     void startMainActivity() {
         credentials.username().put("Demo");
 
-        MainActivity_.intent(this).start();
-        finish();
+            MainActivity_.intent(this).start();
+            finish();
 
     }
 

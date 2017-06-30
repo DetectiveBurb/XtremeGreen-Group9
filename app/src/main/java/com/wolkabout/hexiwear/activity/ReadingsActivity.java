@@ -72,7 +72,6 @@ import java.util.Map;
 public class ReadingsActivity extends AppCompatActivity implements ServiceConnection {
 
     private static final String TAG = ReadingsActivity.class.getSimpleName();
-    private static final String values;
 
     @Extra
     BluetoothDevice device;
@@ -114,10 +113,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         firebaseReference = firebaseDBInstance.getReference("HR");
     }
 
-    @Before
-    void initData(){
-        data='';
-    }
+
 
 
 
@@ -164,7 +160,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
     @Receiver(actions = BluetoothService.HIDE_TIME_PROGRESS, local = true)
     void hideProgressForSettingTime() {
-        return;
+       return;
     }
 
 
@@ -186,7 +182,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         // Something terrible happened.
     }
 
-    @Override
+        @Override
     protected void onDestroy() {
         if (isBound) {
             unbindService(this);
@@ -230,41 +226,39 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case TEMPERATURE:
                 someReading.setText(data.toString());
                 firebaseReference.setValue(data.toString());
-                values=data.toString();
-                data
                 break;
             case HUMIDITY:
                 someReading.setText(data.toString());
                 firebaseReference.setValue(data.toString());
-                values=data.toString();
                 break;
             case PRESSURE:
+
                 break;
             case HEARTRATE:
+                //someReading.setText(data.toString());
+               // firebaseReference.setValue(data.toString());
                 break;
             case LIGHT:
                 someReading.setText(data.toString());
                 firebaseReference.setValue(data.toString());
-                values=data.toString();
                 break;
             case STEPS:
                 break;
             case CALORIES:
                 break;
             case ACCELERATION:
-               // final String[] accelerationReadings = data.split(";");
+             //   final String[] accelerationReadings = data.split(";");
                 break;
             case MAGNET:
                // final String[] magnetReadings = data.split(";");
                 break;
             case GYRO:
-               // final String[] gyroscopeReadings = data.split(";");
+                //final String[] gyroscopeReadings = data.split(";");
                 break;
             default:
                 break;
         }
     }
-
 
     @Receiver(actions = BluetoothService.STOP)
     void onStopReading() {
@@ -333,10 +327,3 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     }
 
 }
-
-    public String getDataReading() {
-      //  final String data = intent.getStringExtra(BluetoothService.STRING_DATA);
-        return values;
-
-    }
-
