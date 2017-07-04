@@ -97,6 +97,9 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
     private DatabaseReference firebaseReference;
     private FirebaseDatabase firebaseDBInstance;
+    private DatabaseReference firebaseLight;
+    private DatabaseReference firebaseHumidity;
+
 
     @AfterInject
     void startService() {
@@ -110,7 +113,9 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     @AfterInject
     void startFirebase(){
         firebaseDBInstance = FirebaseDatabase.getInstance();
-        firebaseReference = firebaseDBInstance.getReference("HR");
+        firebaseReference = firebaseDBInstance.getReference("Tempurature");
+        firebaseLight = firebaseDBInstance.getReference("Light");
+        firebaseHumidity = firebaseDBInstance.getReference("Humidty");
     }
 
 
@@ -160,7 +165,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
     @Receiver(actions = BluetoothService.HIDE_TIME_PROGRESS, local = true)
     void hideProgressForSettingTime() {
-       return;
+        return;
     }
 
 
@@ -182,7 +187,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         // Something terrible happened.
     }
 
-        @Override
+    @Override
     protected void onDestroy() {
         if (isBound) {
             unbindService(this);
@@ -207,6 +212,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     @Receiver(actions = BluetoothService.DATA_AVAILABLE, local = true)
     void onDataAvailable(Intent intent) {
 
+
         final String uuid = intent.getStringExtra(BluetoothService.READING_TYPE);
         final String data = intent.getStringExtra(BluetoothService.STRING_DATA);
 
@@ -229,28 +235,27 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case HUMIDITY:
                 someReading.setText(data.toString());
-                firebaseReference.setValue(data.toString());
+                firebaseHumidity.setValue((data.toString()));
                 break;
             case PRESSURE:
-
                 break;
             case HEARTRATE:
                 //someReading.setText(data.toString());
-               // firebaseReference.setValue(data.toString());
+                // firebaseReference.setValue(data.toString());
                 break;
             case LIGHT:
                 someReading.setText(data.toString());
-                firebaseReference.setValue(data.toString());
+                firebaseLight.setValue((data.toString()));
                 break;
             case STEPS:
                 break;
             case CALORIES:
                 break;
             case ACCELERATION:
-             //   final String[] accelerationReadings = data.split(";");
+                //   final String[] accelerationReadings = data.split(";");
                 break;
             case MAGNET:
-               // final String[] magnetReadings = data.split(";");
+                // final String[] magnetReadings = data.split(";");
                 break;
             case GYRO:
                 //final String[] gyroscopeReadings = data.split(";");
