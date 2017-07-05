@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.wolkabout.hexiwear.R;
 import com.wolkabout.hexiwear.model.Characteristic;
 import com.wolkabout.hexiwear.model.HexiwearDevice;
@@ -66,6 +67,8 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+
+import edu.umd.cs.findbugs.annotations.OverrideMustInvoke;
 
 @EActivity(R.layout.activity_readings)
 @OptionsMenu(R.menu.menu_readings)
@@ -231,7 +234,16 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case TEMPERATURE:
                 someReading.setText(data.toString());
-                firebaseReference.setValue(data.toString());
+                firebaseReference.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            System.out.println("Error! Data not saved.");
+                        } else {
+                            System.out.println("Data successfully saved.");
+                        }
+                    }
+                });
                 break;
             case HUMIDITY:
                 someReading.setText(data.toString());
