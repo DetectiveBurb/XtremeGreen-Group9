@@ -247,7 +247,16 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case HUMIDITY:
                 someReading.setText(data.toString());
-                firebaseHumidity.setValue((data.toString()));
+                firebaseHumidity.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            System.out.println("Error! Data not saved.");
+                        } else {
+                            System.out.println("Data successfully saved.");
+                        }
+                    }
+                });
                 break;
             case PRESSURE:
                 break;
@@ -257,7 +266,16 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case LIGHT:
                 someReading.setText(data.toString());
-                firebaseLight.setValue((data.toString()));
+                firebaseLight.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            System.out.println("Error! Data not saved.");
+                        } else {
+                            System.out.println("Data successfully saved.");
+                        }
+                    }
+                });
                 break;
             case STEPS:
                 break;
