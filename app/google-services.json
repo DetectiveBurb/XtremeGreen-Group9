@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "433614506268",
+    "firebase_url": "https://xtremegreen-group9.firebaseio.com",
+    "project_id": "xtremegreen-group9",
+    "storage_bucket": "xtremegreen-group9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433614506268:android:647a0ea43110a502",
+        "android_client_info": {
+          "package_name": "com.wolkabout.hexiwear"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433614506268-7o09otlhmhmrn7gf0ph1o4gnkj17d3lq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wolkabout.hexiwear",
+            "certificate_hash": "a505ff44e43ea68dd5019dd6528aeae4faa58008"
+          }
+        },
+        {
+          "client_id": "433614506268-mpocqvha4lke9o183f093phk6aar2p1q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wolkabout.hexiwear",
+            "certificate_hash": "2038ed3950839faaf966ec32b8fd654eb10ae9f5"
+          }
+        },
+        {
+          "client_id": "433614506268-gvubk4v4or1g22ujvg8njjea8ek74jj3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkjhQehW-A9ZOEJqv1v9VZzKXwARBmivM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433614506268-gvubk4v4or1g22ujvg8njjea8ek74jj3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433614506268:android:2448c7560ec2a1c5",
+        "android_client_info": {
+          "package_name": "com.example.perk.xtremegreenclient"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433614506268-le2n7hj4ka918jsce0mqavshfg0f4nii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.perk.xtremegreenclient",
+            "certificate_hash": "ff60c059fea625cd0aac4ed670129f023316c02f"
+          }
+        },
+        {
+          "client_id": "433614506268-gvubk4v4or1g22ujvg8njjea8ek74jj3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkjhQehW-A9ZOEJqv1v9VZzKXwARBmivM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433614506268-gvubk4v4or1g22ujvg8njjea8ek74jj3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

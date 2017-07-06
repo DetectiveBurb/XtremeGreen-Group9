@@ -33,10 +33,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.wolkabout.hexiwear.R;
 import com.wolkabout.hexiwear.model.Characteristic;
 import com.wolkabout.hexiwear.model.HexiwearDevice;
@@ -64,6 +68,8 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.OverrideMustInvoke;
+
 @EActivity(R.layout.activity_readings)
 @OptionsMenu(R.menu.menu_readings)
 public class ReadingsActivity extends AppCompatActivity implements ServiceConnection {
@@ -72,54 +78,6 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
     @Extra
     BluetoothDevice device;
-
-    @ViewById
-    View coordinator;
-
-    @ViewById
-    Toolbar toolbar;
-
-    @ViewById
-    SingleReading readingBattery;
-
-    @ViewById
-    SingleReading readingTemperature;
-
-    @ViewById
-    SingleReading readingHumidity;
-
-    @ViewById
-    SingleReading readingPressure;
-
-    @ViewById
-    SingleReading readingHeartRate;
-
-    @ViewById
-    SingleReading readingLight;
-
-    @ViewById
-    SingleReading readingSteps;
-
-    @ViewById
-    SingleReading readingCalories;
-
-    @ViewById
-    TripleReading readingAcceleration;
-
-    @ViewById
-    TripleReading readingMagnet;
-
-    @ViewById
-    TripleReading readingGyro;
-
-    @ViewById
-    TextView connectionStatus;
-
-    @ViewById
-    ProgressBar progressBar;
-
-    @ViewById
-    LinearLayout readings;
 
     @Bean
     HexiwearDevices hexiwearDevices;
@@ -130,12 +88,21 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     @Bean
     Dialog dialog;
 
+    @ViewById
+    EditText someReading;
+
     private ProgressDialog progressDialog;
     private HexiwearDevice hexiwearDevice;
     private BluetoothService bluetoothService;
     private boolean isBound;
     private Mode mode = Mode.IDLE;
     private boolean shouldUnpair;
+
+    private DatabaseReference firebaseReference;
+    private FirebaseDatabase firebaseDBInstance;
+    private DatabaseReference firebaseLight;
+    private DatabaseReference firebaseHumidity;
+
 
     @AfterInject
     void startService() {
@@ -146,31 +113,33 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         isBound = bindService(BluetoothService_.intent(this).get(), this, BIND_AUTO_CREATE);
     }
 
-    @AfterViews
-    void setViews() {
-        toolbar.setTitle(hexiwearDevice.getWolkName());
-        setSupportActionBar(toolbar);
-        progressBar.setVisibility(View.VISIBLE);
+    @AfterInject
+    void startFirebase(){
+        firebaseDBInstance = FirebaseDatabase.getInstance();
+        firebaseReference = firebaseDBInstance.getReference("Tempurature");
+        firebaseLight = firebaseDBInstance.getReference("Light");
+        firebaseHumidity = firebaseDBInstance.getReference("Humidty");
     }
+
+
+
+
 
     @Override
     protected void onResume() {
         super.onResume();
         shouldUnpair = false;
         invalidateOptionsMenu();
-        setReadingVisibility(mode);
     }
 
     @Receiver(actions = BluetoothService.MODE_CHANGED, local = true)
     void onModeChanged(@Receiver.Extra final Mode mode) {
         this.mode = mode;
-        connectionStatus.setText(mode.getStringResource());
 
         if (mode == Mode.IDLE) {
             dialog.showInfo(R.string.readings_idle_mode, false);
         }
 
-        setReadingVisibility(mode);
     }
 
     @Receiver(actions = BluetoothService.BLUETOOTH_SERVICE_STOPPED, local = true)
@@ -194,31 +163,14 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
     @Receiver(actions = BluetoothService.SHOW_TIME_PROGRESS, local = true)
     void showProgressForSettingTime() {
-        if (progressBar == null) {
-            return;
-        }
-
-        progressBar.setVisibility(View.VISIBLE);
+        return;
     }
 
     @Receiver(actions = BluetoothService.HIDE_TIME_PROGRESS, local = true)
     void hideProgressForSettingTime() {
-        if (progressBar == null) {
-            return;
-        }
-
-        progressBar.setVisibility(View.INVISIBLE);
+        return;
     }
 
-    private void setReadingVisibility(final Mode mode) {
-        final Map<String, Boolean> displayPreferences = hexiwearDevices.getDisplayPreferences(device.getAddress());
-        for (int i = 0; i < readings.getChildCount(); i++) {
-            final Reading reading = (Reading) readings.getChildAt(i);
-            final Characteristic readingType = reading.getReadingType();
-            final boolean readingEnabled = displayPreferences.get(readingType.name());
-            reading.setVisibility(readingEnabled && mode.hasCharacteristic(readingType) ? View.VISIBLE : View.GONE);
-        }
-    }
 
     @Override
     public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -249,18 +201,20 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
     @Receiver(actions = BluetoothService.ACTION_NEEDS_BOND, local = true)
     void onBondRequested() {
-        connectionStatus.setText(R.string.discovery_pairing);
-        Snackbar.make(coordinator, R.string.discovery_pairing, Snackbar.LENGTH_LONG).show();
+        return;
     }
 
     @Receiver(actions = BluetoothService.CONNECTION_STATE_CHANGED, local = true)
     void onConnectionStateChanged(@Receiver.Extra final boolean connectionState) {
-        connectionStatus.setText(connectionState ? R.string.readings_connection_connected : R.string.readings_connection_reconnecting);
+        return;
     }
 
+
+    //This is were data comes in
+    //This is the only method you need to worry about :)
     @Receiver(actions = BluetoothService.DATA_AVAILABLE, local = true)
     void onDataAvailable(Intent intent) {
-        progressBar.setVisibility(View.INVISIBLE);
+
 
         final String uuid = intent.getStringExtra(BluetoothService.READING_TYPE);
         final String data = intent.getStringExtra(BluetoothService.STRING_DATA);
@@ -277,46 +231,64 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
         switch (characteristic) {
             case BATTERY:
-                readingBattery.setValue(data);
                 break;
             case TEMPERATURE:
-                readingTemperature.setValue(data);
+                someReading.setText(data.toString());
+                firebaseReference.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            System.out.println("Error! Data not saved.");
+                        } else {
+                            System.out.println("Data successfully saved.");
+                        }
+                    }
+                });
                 break;
             case HUMIDITY:
-                readingHumidity.setValue(data);
+                someReading.setText(data.toString());
+                firebaseHumidity.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            System.out.println("Error! Data not saved.");
+                        } else {
+                            System.out.println("Data successfully saved.");
+                        }
+                    }
+                });
                 break;
             case PRESSURE:
-                readingPressure.setValue(data);
                 break;
             case HEARTRATE:
-                readingHeartRate.setValue(data);
+                //someReading.setText(data.toString());
+                // firebaseReference.setValue(data.toString());
                 break;
             case LIGHT:
-                readingLight.setValue(data);
+                someReading.setText(data.toString());
+                firebaseLight.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            System.out.println("Error! Data not saved.");
+                        } else {
+                            System.out.println("Data successfully saved.");
+                        }
+                    }
+                });
                 break;
             case STEPS:
-                readingSteps.setValue(data);
                 break;
             case CALORIES:
-                readingCalories.setValue(data);
                 break;
             case ACCELERATION:
-                final String[] accelerationReadings = data.split(";");
-                readingAcceleration.setFirstValue(accelerationReadings[0]);
-                readingAcceleration.setSecondValue(accelerationReadings[1]);
-                readingAcceleration.setThirdValue(accelerationReadings[2]);
+                //   final String[] accelerationReadings = data.split(";");
                 break;
             case MAGNET:
-                final String[] magnetReadings = data.split(";");
-                readingMagnet.setFirstValue(magnetReadings[0]);
-                readingMagnet.setSecondValue(magnetReadings[1]);
-                readingMagnet.setThirdValue(magnetReadings[2]);
+                // final String[] magnetReadings = data.split(";");
                 break;
             case GYRO:
-                final String[] gyroscopeReadings = data.split(";");
-                readingGyro.setFirstValue(gyroscopeReadings[0]);
-                readingGyro.setSecondValue(gyroscopeReadings[1]);
-                readingGyro.setThirdValue(gyroscopeReadings[2]);
+                //final String[] gyroscopeReadings = data.split(";");
                 break;
             default:
                 break;

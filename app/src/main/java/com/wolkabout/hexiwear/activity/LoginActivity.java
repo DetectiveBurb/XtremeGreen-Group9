@@ -97,12 +97,15 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    //Force the app to sign-in with the Demo credentials
+    //does not saves data to wolksense cloud
     @AfterViews
     void startMainActivity() {
-        if (credentials.username().exists() && !credentials.username().get().equals("Demo")) {
+        credentials.username().put("Demo");
+
             MainActivity_.intent(this).start();
             finish();
-        }
+
     }
 
     @Click(R.id.signUp)
@@ -113,52 +116,13 @@ public class LoginActivity extends AppCompatActivity {
     @Click(R.id.signInButton)
     @EditorAction(R.id.passwordField)
     void attemptSignIn() {
-        if ("demo".equals(emailField.getValue()) && "demo".equals(passwordField.getValue())) {
-            credentials.username().put("Demo");
-            MainActivity_.intent(LoginActivity.this).start();
-            finish();
-            return;
-        }
-
-        if (!validateCredentials()) {
-            return;
-        }
-
-        inputMethodManager.hideSoftInputFromWindow(passwordField.getWindowToken(), 0);
-
-        signInElements.setVisibility(View.GONE);
-        signingInElements.setVisibility(View.VISIBLE);
-
-        signIn();
+        //Ignores credentials and start in demo mode
+        credentials.username().put("Demo");
+        MainActivity_.intent(LoginActivity.this).start();
+        finish();
+        return;
     }
 
-    @Background
-    void signIn() {
-        try {
-            final String emailAddress = emailField.getValue();
-            final String password = passwordField.getValue();
-
-            final AuthenticationResponseDto response = authenticationService.signIn(new SignInDto(emailAddress, password));
-            credentials.username().put(response.getEmail());
-            credentials.accessToken().put(response.getAccessToken());
-            credentials.refreshToken().put(response.getRefreshToken());
-            credentials.accessTokenExpires().put(response.getAccessTokenExpires().getTime());
-            credentials.refreshTokenExpires().put(response.getRefreshTokenExpires().getTime());
-            MainActivity_.intent(LoginActivity.this).start();
-            finish();
-        } catch (HttpStatusCodeException e) {
-            Log.e(TAG, "signIn: ", e);
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                onSignInError(R.string.login_error_invalid_credentials);
-                return;
-            }
-
-            onSignInError(R.string.login_error_general);
-        } catch (Exception e) {
-            Log.e(TAG, "signIn: ", e);
-            onSignInError(R.string.login_error_general);
-        }
-    }
 
     @UiThread
     void onSignInError(int messageRes) {
