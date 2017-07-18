@@ -27,20 +27,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.*;
 import com.wolkabout.hexiwear.R;
 import com.wolkabout.hexiwear.model.Characteristic;
 import com.wolkabout.hexiwear.model.HexiwearDevice;
@@ -49,13 +43,9 @@ import com.wolkabout.hexiwear.service.BluetoothService;
 import com.wolkabout.hexiwear.service.BluetoothService_;
 import com.wolkabout.hexiwear.util.Dialog;
 import com.wolkabout.hexiwear.util.HexiwearDevices;
-import com.wolkabout.hexiwear.view.Reading;
-import com.wolkabout.hexiwear.view.SingleReading;
-import com.wolkabout.hexiwear.view.TripleReading;
 import com.wolkabout.wolkrestandroid.Credentials_;
 
 import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
@@ -68,9 +58,6 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-
-import edu.umd.cs.findbugs.annotations.OverrideMustInvoke;
 
 @EActivity(R.layout.activity_readings)
 @OptionsMenu(R.menu.menu_readings)
@@ -252,7 +239,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case TEMPERATURE:
                 someReading.setText(data.toString());
                 temp=data.toString();
-                firebaseReference.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                /*firebaseReference.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if (databaseError != null) {
@@ -261,7 +248,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                             System.out.println("Data successfully saved.");
                         }
                     }
-                });
+                });*/
                 break;
             case HUMIDITY:
                 someReading.setText(data.toString());
@@ -313,6 +300,12 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             default:
                 break;
         }
+    }
+
+    void update()
+    {
+        DataEntry dataEntry = new DataEntry(getTimeStamp(), temp, humid, light);
+        firebaseReference.child(getTimeStamp()).setValue(dataEntry);
     }
 
     @Receiver(actions = BluetoothService.STOP)
