@@ -66,6 +66,8 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.OverrideMustInvoke;
@@ -91,6 +93,9 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     @ViewById
     EditText someReading;
 
+    private String temp;
+    private String light;
+    private String humid;
     private ProgressDialog progressDialog;
     private HexiwearDevice hexiwearDevice;
     private BluetoothService bluetoothService;
@@ -112,7 +117,18 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         }
         isBound = bindService(BluetoothService_.intent(this).get(), this, BIND_AUTO_CREATE);
     }
-
+    @AfterInject
+    void startFirebase(){
+        firebaseDBInstance = FirebaseDatabase.getInstance();
+        firebaseReference = firebaseDBInstance.getReference("Green House Readings");
+    }
+    //Retrieves date in desired format
+    String getTimeStamp(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDateTime = dateFormat.format(new Date()); // Find todays date
+        return currentDateTime;
+    }
+    /*
     @AfterInject
     void startFirebase(){
         firebaseDBInstance = FirebaseDatabase.getInstance();
@@ -120,6 +136,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         firebaseLight = firebaseDBInstance.getReference("Light");
         firebaseHumidity = firebaseDBInstance.getReference("Humidty");
     }
+    */
 
 
 
@@ -234,6 +251,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case TEMPERATURE:
                 someReading.setText(data.toString());
+                temp=data.toString();
                 firebaseReference.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -247,6 +265,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case HUMIDITY:
                 someReading.setText(data.toString());
+                humid=data.toString();
                 firebaseHumidity.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -266,6 +285,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case LIGHT:
                 someReading.setText(data.toString());
+                light.toString();
                 firebaseLight.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
