@@ -32,7 +32,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.EditText;
 
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.wolkabout.hexiwear.R;
@@ -80,6 +79,8 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     @ViewById
     EditText someReading;
 
+
+    private long systemTime = System.currentTimeMillis();
     private String temp;
     private String light;
     private String humid;
@@ -216,6 +217,13 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
     //This is were data comes in
     //This is the only method you need to worry about :)
+
+    void update()
+    {
+        DataEntry dataEntry = new DataEntry(getTimeStamp(), temp, humid, light);
+        firebaseReference.child(getTimeStamp()).setValue(dataEntry);
+    }
+
     @Receiver(actions = BluetoothService.DATA_AVAILABLE, local = true)
     void onDataAvailable(Intent intent) {
 
@@ -239,6 +247,10 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case TEMPERATURE:
                 someReading.setText(data.toString());
                 temp=data.toString();
+                if(systemTime%System.currentTimeMillis() <= 60000){
+                    update();
+                    systemTime = System.currentTimeMillis();
+                }
                 /*firebaseReference.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -253,7 +265,11 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case HUMIDITY:
                 someReading.setText(data.toString());
                 humid=data.toString();
-                firebaseHumidity.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                if(systemTime%System.currentTimeMillis() <= 60000){
+                    update();
+                    systemTime = System.currentTimeMillis();
+                }
+                /*firebaseHumidity.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if (databaseError != null) {
@@ -262,7 +278,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                             System.out.println("Data successfully saved.");
                         }
                     }
-                });
+                });*/
                 break;
             case PRESSURE:
                 break;
@@ -272,8 +288,12 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                 break;
             case LIGHT:
                 someReading.setText(data.toString());
-                light.toString();
-                firebaseLight.setValue(data.toString(), new DatabaseReference.CompletionListener() {
+                light=data.toString();
+                if(systemTime%System.currentTimeMillis() <= 60000){
+                    update();
+                    systemTime = System.currentTimeMillis();
+                }
+                /*firebaseLight.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if (databaseError != null) {
@@ -282,7 +302,7 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
                             System.out.println("Data successfully saved.");
                         }
                     }
-                });
+                });*/
                 break;
             case STEPS:
                 break;
@@ -300,12 +320,6 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             default:
                 break;
         }
-    }
-
-    void update()
-    {
-        DataEntry dataEntry = new DataEntry(getTimeStamp(), temp, humid, light);
-        firebaseReference.child(getTimeStamp()).setValue(dataEntry);
     }
 
     @Receiver(actions = BluetoothService.STOP)
