@@ -10,7 +10,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 22
         versionCode 29
-        versionName "1.29"
+        versionName
+        multiDexEnabled true
     }
     buildTypes {
         release {

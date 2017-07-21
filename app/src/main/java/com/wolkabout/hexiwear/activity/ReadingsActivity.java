@@ -79,22 +79,22 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
     @ViewById
     EditText someReading;
 
-
+    //The variables that concern us
+    private DatabaseReference firebaseReference;
+    private FirebaseDatabase firebaseDBInstance;
     private long systemTime = System.currentTimeMillis();
+
     private String temp;
     private String light;
     private String humid;
+
+
     private ProgressDialog progressDialog;
     private HexiwearDevice hexiwearDevice;
     private BluetoothService bluetoothService;
     private boolean isBound;
     private Mode mode = Mode.IDLE;
     private boolean shouldUnpair;
-
-    private DatabaseReference firebaseReference;
-    private FirebaseDatabase firebaseDBInstance;
-    private DatabaseReference firebaseLight;
-    private DatabaseReference firebaseHumidity;
 
 
     @AfterInject
@@ -116,19 +116,6 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
         String currentDateTime = dateFormat.format(new Date()); // Find todays date
         return currentDateTime;
     }
-    /*
-    @AfterInject
-    void startFirebase(){
-        firebaseDBInstance = FirebaseDatabase.getInstance();
-        firebaseReference = firebaseDBInstance.getReference("Tempurature");
-        firebaseLight = firebaseDBInstance.getReference("Light");
-        firebaseHumidity = firebaseDBInstance.getReference("Humidty");
-    }
-    */
-
-
-
-
 
     @Override
     protected void onResume() {
@@ -216,12 +203,15 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
 
     //This is were data comes in
-    //This is the only method you need to worry about :)
+    //This is the only method you need to worry about :( FUCK FIREBASE!
 
     void update()
     {
-        DataEntry dataEntry = new DataEntry(getTimeStamp(), temp, humid, light);
-        firebaseReference.child(getTimeStamp()).setValue(dataEntry);
+        String id=firebaseReference.push().getKey();
+        DataEntry dataEntry = new DataEntry(id, temp, humid, light);
+        firebaseReference.child(id).setValue(dataEntry);
+        System.out.println("Update() Called");
+        finish();
     }
 
     @Receiver(actions = BluetoothService.DATA_AVAILABLE, local = true)
@@ -247,10 +237,13 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case TEMPERATURE:
                 someReading.setText(data.toString());
                 temp=data.toString();
+                update();
+                /*
                 if(systemTime%System.currentTimeMillis() <= 60000){
                     update();
                     systemTime = System.currentTimeMillis();
                 }
+                */
                 /*firebaseReference.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -265,10 +258,13 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case HUMIDITY:
                 someReading.setText(data.toString());
                 humid=data.toString();
+                update();
+                /*
                 if(systemTime%System.currentTimeMillis() <= 60000){
                     update();
                     systemTime = System.currentTimeMillis();
                 }
+                */
                 /*firebaseHumidity.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -289,10 +285,12 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
             case LIGHT:
                 someReading.setText(data.toString());
                 light=data.toString();
+                update();
+                /*
                 if(systemTime%System.currentTimeMillis() <= 60000){
                     update();
                     systemTime = System.currentTimeMillis();
-                }
+                }*/
                 /*firebaseLight.setValue(data.toString(), new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
