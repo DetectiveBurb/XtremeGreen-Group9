@@ -203,8 +203,10 @@ public class ReadingsActivity extends AppCompatActivity implements ServiceConnec
 
 
     //This is were data comes in
-    //This is the only method you need to worry about :( FUCK FIREBASE!
+    //This is the only method you need to worry about :
 
+    //Update method could not be tested due to IDE errors that can be seen in the post mortem report
+    //for iteration 3
     void update()
     {
         String id=firebaseReference.push().getKey();
